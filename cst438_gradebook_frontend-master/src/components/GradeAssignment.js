@@ -1,7 +1,7 @@
 import React, {useState, useEffect}  from 'react';
 import {SERVER_URL} from '../constants';
 
-
+import {useHistory} from 'react-router-dom';
 //  required properties -  assignmentId
 //  
 
@@ -11,14 +11,20 @@ function GradeAssignment ( ) {
   let assignmentId=0;
   const [message, setMessage] = useState('');
 
+  const history = useHistory();
+
+  const toListAssignment = () => {
+    history.push('/');
+  };
+  
   const path = window.location.pathname;  // /gradebook/123
   const s = /\d+$/.exec(path)[0];
   console.log("Grade assignmentId="+s);
   assignmentId=s;
 
   useEffect(() => {
-    fetchGrades()
-   }, [] )
+    fetchGrades();
+   }, [assignmentId] )
 
  
   const fetchGrades = ( ) => {
@@ -104,6 +110,8 @@ function GradeAssignment ( ) {
             </tbody>
           </table>
           <button id="sgrade" type="button" margin="auto" onClick={saveGrades}>Save Grades</button>
+          <button id="saveButton" type="button" margin="auto" onClick={saveGrades}>Save Grades</button>
+          <button onClick={toListAssignment}>Back</button>
         </div>
       </div>
     )
