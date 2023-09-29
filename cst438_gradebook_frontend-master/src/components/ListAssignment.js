@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {SERVER_URL} from '../constants';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 
 
 function ListAssignment(props) {
@@ -13,6 +13,13 @@ function ListAssignment(props) {
    fetchAssignments();
   }, [] )
  
+
+  const history = useHistory();
+
+  const toAddAssignment = () => {
+    history.push('/addAssignment/');
+  };
+
   const fetchAssignments = () => {
     console.log("fetchAssignments");
     fetch(`${SERVER_URL}/assignment`)
@@ -24,6 +31,27 @@ function ListAssignment(props) {
     .catch(err => console.error(err)); 
   }
   
+
+  const deleteAssignment = (id) => {
+    setMessage('');   
+    fetch(`${SERVER_URL}/assignment/${id}?force=true` , 
+        {  
+          method: 'DELETE',
+        })
+    .then(res => {
+        if (res.ok) {
+          fetchAssignments();
+          setMessage("Assignment Deleted.");
+        } else {
+          setMessage("Delete error. "+res.status);
+          console.error('Delete Assignment error =' + res.status);
+    }})
+      .catch(err => {
+          setMessage("Exception. "+err);
+          console.error('Delete Assignment exception =' + err);
+      });
+  }
+
   
     const headers = ['Assignment Name', 'Course Title', 'Due Date', ' ', ' ', ' '];
     
@@ -45,14 +73,19 @@ function ListAssignment(props) {
                       <td>{row.courseTitle}</td>
                       <td>{row.dueDate}</td>
                       <td>
-                        <Link to={`/gradeAssignment/${assignments[idx].id}`} >Grade</Link>
-                      </td>
-                      <td>Edit</td>
-                      <td>Delete</td>
+                      <Link to={`/gradeAssignment/${assignments[idx].id}`} className="link-style-grade">Grade</Link>
+                    </td>
+                    <td>
+                      <Link to={`/editAssignment/${assignments[idx].id}`} className="link-style-edit">Edit</Link>
+                    </td>
+                    <td><button id="deleteButton" onClick={() => deleteAssignment(assignments[idx].id)}>Delete</button></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
+              <button onClick={toAddAssignment}>Add Assignment</button>
+
           </div>
       </div>
     )
