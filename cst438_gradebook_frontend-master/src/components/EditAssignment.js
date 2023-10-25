@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 function EditAssignment(props) {
   const [assignmentData, setAssignmentData] = useState([]);
   const [message, setMessage] = useState('');
+  const token = sessionStorage.getItem("jwt");
 
   const history = useHistory();
 
@@ -25,7 +26,9 @@ function EditAssignment(props) {
 
   const fetchAssignmentData = () => {
     console.log("fetchAssignmentData");
-    fetch(`${SERVER_URL}/assignment/${assignmentId}`)
+    fetch(`${SERVER_URL}/assignment/${assignmentId}`,{
+      headers: {'Authorization' : token}
+    })
       .then((response) => response.json())
       .then((data) => {
         console.log("assignmentData length " + data.length);
@@ -38,7 +41,8 @@ function EditAssignment(props) {
     setMessage('');
     fetch(`${SERVER_URL}/assignment/${assignmentId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+                        'Authorization' : token   }, 
       body: JSON.stringify(assignmentData),
     })
       .then((response) => {
